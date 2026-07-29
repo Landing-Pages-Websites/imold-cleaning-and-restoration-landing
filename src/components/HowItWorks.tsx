@@ -2,31 +2,48 @@ import type { JSX } from "react";
 import { SectionHeading } from "./SectionHeading";
 import { CTAButtons } from "./CTAButtons";
 import { Reveal } from "./Reveal";
-import { STEPS } from "./Brand";
+import { Icon, type IconName } from "./Icons";
+import { STEPS, type Step } from "./Brand";
+
+const STEP_ICON: Record<Step["icon"], IconName> = {
+  call: "phone",
+  inspect: "clipboardCheck",
+  restore: "droplets",
+  rebuild: "home",
+};
 
 export function HowItWorks(): JSX.Element {
   return (
-    <section id="how-it-works" className="bg-[var(--color-soft)] py-16 sm:py-20 lg:py-24">
+    <section
+      id="how-it-works"
+      className="bg-[var(--color-surface)] py-16 sm:py-20 lg:py-24"
+    >
       <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
         <SectionHeading
           eyebrow="How it works"
-          title="Booked, cleaned, and dry — fast"
-          subtitle="Three simple steps from your first call to carpets that look and feel new again."
+          title="From emergency call to finished rebuild"
+          subtitle="Four clear steps — with one licensed team and one point of contact the whole way through."
         />
 
-        <ol className="mt-12 grid gap-6 md:grid-cols-3">
+        <ol className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((step, i) => (
             <Reveal key={step.n} delay={i * 80} className="h-full">
-              <li className="relative h-full rounded-2xl bg-white ring-1 ring-[var(--color-border)] p-7 shadow-[0_4px_16px_rgba(15,64,52,0.06)]">
-                <div className="flex items-center gap-4">
-                  <span className="grid place-items-center h-12 w-12 rounded-full bg-[var(--color-primary-dark)] text-white text-xl font-extrabold shrink-0">
-                    {step.n}
+              <li className="relative h-full rounded-2xl bg-[var(--color-primary)] ring-1 ring-[var(--color-hairline)] p-6">
+                <div className="flex items-center justify-between">
+                  <span className="grid place-items-center h-12 w-12 rounded-xl bg-[var(--color-secondary)]/15 text-[var(--color-secondary)]">
+                    <Icon name={STEP_ICON[step.icon]} size={24} />
                   </span>
-                  <h3 className="text-lg font-bold text-[var(--color-secondary)]">
-                    {step.title}
-                  </h3>
+                  <span
+                    className="font-display text-4xl font-extrabold text-white/10"
+                    aria-hidden="true"
+                  >
+                    {String(step.n).padStart(2, "0")}
+                  </span>
                 </div>
-                <p className="mt-4 text-[var(--color-text-muted)] leading-relaxed">
+                <h3 className="mt-5 text-lg font-bold text-white">
+                  {step.title}
+                </h3>
+                <p className="mt-2.5 text-sm text-[var(--color-text-muted)] leading-relaxed">
                   {step.copy}
                 </p>
               </li>
@@ -35,7 +52,7 @@ export function HowItWorks(): JSX.Element {
         </ol>
 
         <div className="mt-12 flex justify-center">
-          <CTAButtons bookLabel="Book My Carpet Cleaning" align="center" />
+          <CTAButtons align="center" />
         </div>
       </div>
     </section>

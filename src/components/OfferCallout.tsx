@@ -1,71 +1,65 @@
 import type { JSX } from "react";
-import { Icon } from "./Icons";
+import { SectionHeading } from "./SectionHeading";
 import { CTAButtons } from "./CTAButtons";
 import { Reveal } from "./Reveal";
-import { OFFER_PRICE } from "./Brand";
+import { Icon, type IconName } from "./Icons";
+import { OFFERS, type Offer } from "./Brand";
 
-const INCLUDES = [
-  "5 rooms professionally cleaned with hot water extraction",
-  "Eco-friendly pre-treatment, safe for kids & pets",
-  "Setup, equipment, and cleanup — all included",
-  "Additional rooms just $45 each",
-];
+const OFFER_ICON: Record<Offer["icon"], IconName> = {
+  inspection: "gift",
+  financing: "creditCard",
+  discount: "heart",
+};
 
 export function OfferCallout(): JSX.Element {
   return (
     <section
-      id="offer-special"
-      className="relative overflow-hidden bg-[var(--color-secondary)] py-16 sm:py-20"
+      id="offers"
+      className="bg-[var(--color-primary)] py-16 sm:py-20 lg:py-24 border-t border-[var(--color-hairline)]"
     >
-      <div className="relative max-w-[1000px] mx-auto px-5 lg:px-8">
-        <Reveal>
-          <div className="rounded-3xl bg-white overflow-hidden shadow-[0_30px_80px_-30px_rgba(0,0,0,0.5)]">
-            {/* orange accent bar */}
-            <div className="h-2 bg-[var(--color-accent)]" aria-hidden="true" />
-            <div className="grid lg:grid-cols-[0.9fr_1.1fr]">
-              {/* Price panel */}
-              <div className="bg-[var(--color-accent-soft)] p-8 sm:p-10 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-[var(--color-border)]">
-                <span className="chip bg-[var(--color-accent)] text-[#1A1A1A] px-3 py-1 w-fit">
-                  <Icon name="tag" size={15} /> Limited-time special
-                </span>
-                <div className="mt-4 text-sm font-bold uppercase tracking-wide text-[var(--color-text-muted)]">
-                  5 Rooms Cleaned
-                </div>
-                <div className="text-6xl sm:text-7xl font-extrabold text-[var(--color-secondary)] leading-none">
-                  {OFFER_PRICE}
-                </div>
-                <p className="mt-3 text-sm text-[var(--color-text-muted)] leading-relaxed">
-                  Additional rooms $45 each. Areas over 150 sq ft count as two
-                  rooms. We explain exactly how rooms are measured before we
-                  start — no hidden fees.
-                </p>
-              </div>
+      <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
+        <SectionHeading
+          eyebrow="Made easier"
+          title="We take the cost stress off your plate"
+          subtitle="Emergencies are stressful enough. These are the ways we make getting your home back more affordable and less overwhelming."
+        />
 
-              {/* Details + CTA */}
-              <div className="p-8 sm:p-10">
-                <h2 className="text-[clamp(1.6rem,3vw,2.25rem)] font-extrabold text-[var(--color-secondary)] leading-tight">
-                  Transparent pricing, start to finish
-                </h2>
-                <ul className="mt-5 space-y-3">
-                  {INCLUDES.map((item) => (
-                    <li key={item} className="flex items-start gap-2.5">
-                      <Icon
-                        name="check"
-                        size={20}
-                        strokeWidth={2.5}
-                        className="mt-0.5 text-[var(--color-primary-dark)] shrink-0"
-                      />
-                      <span className="text-[var(--color-text)]">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-7">
-                  <CTAButtons bookLabel="Claim the $259 Special" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </Reveal>
+        <div className="mt-14 grid gap-6 md:grid-cols-3">
+          {OFFERS.map((offer, i) => {
+            const featured = i === 0;
+            return (
+              <Reveal key={offer.title} delay={i * 80} className="h-full">
+                <article
+                  className={`h-full flex flex-col rounded-2xl p-7 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.8)] ${
+                    featured
+                      ? "bg-[var(--color-accent)]/12 ring-1 ring-[var(--color-accent)]/40"
+                      : "bg-[var(--color-surface)] ring-1 ring-[var(--color-hairline)]"
+                  }`}
+                >
+                  <span
+                    className={`grid place-items-center h-12 w-12 rounded-xl ${
+                      featured
+                        ? "bg-[var(--color-accent)] text-[#06131d]"
+                        : "bg-[var(--color-secondary)]/15 text-[var(--color-secondary)]"
+                    }`}
+                  >
+                    <Icon name={OFFER_ICON[offer.icon]} size={24} />
+                  </span>
+                  <h3 className="mt-4 text-lg font-bold text-white leading-snug">
+                    {offer.title}
+                  </h3>
+                  <p className="mt-2.5 text-[var(--color-text-muted)] leading-relaxed flex-1">
+                    {offer.copy}
+                  </p>
+                </article>
+              </Reveal>
+            );
+          })}
+        </div>
+
+        <div className="mt-12 flex justify-center">
+          <CTAButtons align="center" />
+        </div>
       </div>
     </section>
   );

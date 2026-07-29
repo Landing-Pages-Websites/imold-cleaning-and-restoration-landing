@@ -5,8 +5,8 @@ import { Hero } from "@/components/Hero";
 import { StatsBar } from "@/components/StatsBar";
 import { Services } from "@/components/Services";
 import { WhyUs } from "@/components/WhyUs";
-import { OfferCallout } from "@/components/OfferCallout";
 import { HowItWorks } from "@/components/HowItWorks";
+import { OfferCallout } from "@/components/OfferCallout";
 import { Testimonials } from "@/components/Testimonials";
 import { ServiceArea } from "@/components/ServiceArea";
 import { FAQ } from "@/components/FAQ";
@@ -24,8 +24,8 @@ export default function Page(): JSX.Element {
         <StatsBar />
         <Services />
         <WhyUs />
-        <OfferCallout />
         <HowItWorks />
+        <OfferCallout />
         <Testimonials />
         <ServiceArea />
         <FAQ />

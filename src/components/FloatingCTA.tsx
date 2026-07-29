@@ -1,6 +1,13 @@
 "use client";
 
 import { useEffect, useState, type JSX } from "react";
+import { Icon } from "./Icons";
+import {
+  BUSINESS_NAME,
+  PHONE_DISPLAY,
+  PHONE_HREF,
+  FORM_ANCHOR,
+} from "./Brand";
 
 const HERO_SCROLL_THRESHOLD = 640;
 
@@ -20,7 +27,7 @@ export function FloatingCTA(): JSX.Element {
     if (!finalCta) return;
     const observer = new IntersectionObserver(
       ([entry]) => setFinalInView(entry.isIntersecting),
-      { rootMargin: "0px 0px -20% 0px" },
+      { rootMargin: "0px 0px -20% 0px" }
     );
     observer.observe(finalCta);
     return () => observer.disconnect();
@@ -30,16 +37,30 @@ export function FloatingCTA(): JSX.Element {
 
   return (
     <>
-      {/* Mobile bottom bar */}
+      {/* Mobile bottom bar — Call + Free Inspection */}
       <div
         className={`lg:hidden fixed inset-x-0 bottom-0 z-50 transition-transform duration-300 ${
           visible ? "translate-y-0" : "translate-y-full"
         }`}
       >
-        <div className="bg-white border-t border-[var(--color-border)] shadow-[0_-6px_24px_-8px_rgba(15,64,52,0.3)] px-3 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))]">
-          <a href="#hero" className="btn-primary w-full py-3" aria-label="Book my carpet cleaning">
-            Book Now
-          </a>
+        <div className="bg-[var(--color-surface)] border-t border-[var(--color-hairline)] shadow-[0_-8px_30px_-8px_rgba(0,0,0,0.7)] px-3 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))]">
+          <div className="flex gap-2.5">
+            <a
+              href={PHONE_HREF}
+              className="btn-secondary flex-1 py-3"
+              aria-label={`Call ${BUSINESS_NAME} at ${PHONE_DISPLAY}`}
+            >
+              <Icon name="phone" size={18} className="text-[var(--color-secondary)]" />
+              Call
+            </a>
+            <a
+              href={FORM_ANCHOR}
+              className="btn-primary flex-1 py-3"
+              aria-label="Get my free inspection"
+            >
+              Free Inspection
+            </a>
+          </div>
         </div>
       </div>
 
@@ -52,11 +73,11 @@ export function FloatingCTA(): JSX.Element {
         }`}
       >
         <a
-          href="#hero"
-          className="btn-primary rounded-full px-7 py-3.5 shadow-[0_12px_32px_-8px_rgba(15,64,52,0.5)]"
-          aria-label="Book my carpet cleaning"
+          href={FORM_ANCHOR}
+          className="btn-primary rounded-full px-7 py-3.5 shadow-[0_16px_40px_-10px_rgba(78,168,207,0.7)]"
+          aria-label="Get my free inspection"
         >
-          Book My Carpet Cleaning
+          Get My Free Inspection
         </a>
       </div>
     </>

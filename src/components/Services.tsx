@@ -7,59 +7,62 @@ import { Icon, type IconName } from "./Icons";
 import { SERVICES, type Service } from "./Brand";
 
 const SERVICE_ICON: Record<Service["icon"], IconName> = {
-  carpet: "home",
-  commercial: "truck",
-  upholstery: "sofa",
-  tile: "grid",
-  pressure: "droplets",
+  water: "droplets",
+  mold: "wind",
+  fire: "flame",
 };
 
-function ServiceCard({ service, index }: { service: Service; index: number }): JSX.Element {
+function ServiceCard({
+  service,
+  index,
+}: {
+  service: Service;
+  index: number;
+}): JSX.Element {
   const iconName = SERVICE_ICON[service.icon];
   return (
-    <Reveal delay={index * 60} className="h-full">
-      <article className="group h-full flex flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-[var(--color-border)] shadow-[0_4px_16px_rgba(15,64,52,0.06)] hover:shadow-[0_16px_40px_-16px_rgba(15,64,52,0.28)] transition-shadow">
-        {/* Media / icon header */}
-        <div className="relative h-44 bg-[var(--color-soft)] overflow-hidden">
-          {service.image ? (
-            <Image
-              src={service.image}
-              alt={service.imageAlt ?? service.name}
-              fill
-              sizes="(max-width: 768px) 100vw, 33vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)]">
-              <Icon name={iconName} size={56} className="text-white/90" />
-            </div>
-          )}
+    <Reveal delay={index * 80} className="h-full">
+      <article className="group h-full flex flex-col overflow-hidden rounded-2xl bg-[var(--color-surface)] ring-1 ring-[var(--color-hairline)] shadow-[0_20px_50px_-30px_rgba(0,0,0,0.8)] transition-transform duration-300 hover:-translate-y-1">
+        {/* Media */}
+        <div className="relative h-48 overflow-hidden">
+          <Image
+            src={service.image}
+            alt={service.imageAlt}
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-surface)] via-[var(--color-surface)]/20 to-transparent" />
           {service.badge && (
-            <span className="absolute top-3 left-3 chip bg-[var(--color-accent)] text-[#1A1A1A] px-3 py-1 shadow">
+            <span className="absolute top-3 left-3 chip bg-[var(--color-accent)] text-[#06131d] px-3 py-1.5 shadow-lg">
               {service.badge}
             </span>
           )}
+          <span className="absolute -bottom-5 left-6 grid place-items-center h-12 w-12 rounded-xl bg-[var(--color-secondary)] text-[#06131d] shadow-lg ring-4 ring-[var(--color-surface)]">
+            <Icon name={iconName} size={24} />
+          </span>
         </div>
 
-        <div className="flex flex-1 flex-col p-6">
-          <div className="flex items-center gap-2.5">
-            <span className="grid place-items-center h-10 w-10 rounded-lg bg-[var(--color-primary)]/10 text-[var(--color-primary-dark)] shrink-0">
-              <Icon name={iconName} size={22} />
-            </span>
-            <h3 className="text-lg font-bold text-[var(--color-secondary)] leading-snug">
-              {service.name}
-            </h3>
-          </div>
-          <p className="mt-3 text-[0.95rem] text-[var(--color-text-muted)] leading-relaxed flex-1">
+        <div className="flex flex-1 flex-col p-6 pt-8">
+          <h3 className="text-xl font-bold text-white leading-snug">
+            {service.name}
+          </h3>
+          <p className="mt-3 text-[0.95rem] text-[var(--color-text-muted)] leading-relaxed">
             {service.copy}
           </p>
-          <a
-            href="#hero"
-            className="mt-5 inline-flex items-center gap-1.5 font-bold text-[var(--color-primary-dark)] hover:text-[var(--color-secondary)] transition"
-          >
-            Book {service.icon === "commercial" ? "commercial cleaning" : "this service"}
-            <Icon name="arrowRight" size={17} />
-          </a>
+          <ul className="mt-5 space-y-2.5 border-t border-[var(--color-hairline)] pt-5">
+            {service.bullets.map((b) => (
+              <li key={b} className="flex items-start gap-2.5 text-sm text-white/90">
+                <Icon
+                  name="check"
+                  size={18}
+                  strokeWidth={2.5}
+                  className="mt-0.5 text-[var(--color-accent)] shrink-0"
+                />
+                {b}
+              </li>
+            ))}
+          </ul>
         </div>
       </article>
     </Reveal>
@@ -68,36 +71,22 @@ function ServiceCard({ service, index }: { service: Service; index: number }): J
 
 export function Services(): JSX.Element {
   return (
-    <section id="services" className="bg-[var(--color-soft)] py-16 sm:py-20 lg:py-24">
+    <section id="services" className="bg-[var(--color-primary)] py-16 sm:py-20 lg:py-24">
       <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
         <SectionHeading
-          eyebrow="What we clean"
-          title="Five services, one trusted local crew"
-          subtitle="From the carpets your family lives on to commercial floors and exterior surfaces — all with upfront pricing and IICRC-certified technicians."
+          eyebrow="What we do"
+          title="One licensed team for every kind of damage"
+          subtitle="Water, mold, or fire — we handle the emergency, remediate the problem, and rebuild what's damaged, all under one roof."
         />
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-14 grid gap-6 md:grid-cols-3">
           {SERVICES.map((service, i) => (
             <ServiceCard key={service.slug} service={service} index={i} />
           ))}
-          {/* CTA cell fills the 6th grid slot on lg */}
-          <Reveal
-            delay={SERVICES.length * 60}
-            className="h-full"
-          >
-            <div className="h-full flex flex-col justify-center rounded-2xl bg-[var(--color-secondary)] text-white p-7">
-              <h3 className="text-xl font-bold leading-snug">
-                Not sure which service you need?
-              </h3>
-              <p className="mt-2 text-white/80 text-[0.95rem] leading-relaxed">
-                Tell us about your space and we&apos;ll recommend the right clean — with a
-                straight, upfront price. No pressure, no upsells.
-              </p>
-              <div className="mt-5">
-                <CTAButtons tone="light" bookLabel="Book Carpet Cleaning" />
-              </div>
-            </div>
-          </Reveal>
+        </div>
+
+        <div className="mt-12 flex justify-center">
+          <CTAButtons align="center" />
         </div>
       </div>
     </section>

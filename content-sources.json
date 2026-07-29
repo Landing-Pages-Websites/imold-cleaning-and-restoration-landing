@@ -1,116 +1,147 @@
 {
-  "customer": "Tubro Carpet Cleaning",
-  "task_id": "f706a076-5c1a-48a0-8c33-78d78b4989e3",
-  "note": "Every testimonial is a verbatim quote from the client's own live reviews page. Stats and offers are sourced to the live site, the client knowledge base, or the MEGA strategy brief as noted.",
+  "customer": "iMold Cleaning and Restoration",
+  "customer_id": "cf7dd252-90f0-4465-b338-d4b2c0b4d8e7",
+  "source_provider": "imold-cleaning-and-restoration-landing",
+  "note": "Every testimonial is a verbatim quote from the client's live reviews page (mixed Google / Facebook / Yelp). Credentials and service area are verified against the live imold.us site. The displayed phone number is the authorized CTM tracking number, and the 1,200+ review count and 700+ projects/year figures come from the MEGA strategy brief as noted.",
   "testimonials": [
     {
-      "name": "Lindsey E.",
-      "quote": "This is the second time I have used them to clean my carpets. I tried a different company in between that people said i should try. I had the worst experience and went back to Tubro. They did an amazing job on my carpets. They were professional and didn't try to gouge me on price. I am really impressed by the whole experience. Thank you",
-      "source_url": "https://www.tubrocarpetcleaning.com/reviews",
+      "name": "Robert E.",
+      "platform": "Facebook",
+      "quote": "They were fully transparent with me, charged fairly with no surprises, kept me advised of the required work and progress, and assisted with insurance claims.",
+      "source_url": "https://imold.us/reviews/",
       "verified": true
     },
     {
-      "name": "Richard N.",
-      "quote": "We had pet stains that Charles completely removed. His prices are much better than the big advertising companies. Don't hesitate in using him.",
-      "source_url": "https://www.tubrocarpetcleaning.com/reviews",
+      "name": "Crystal W.",
+      "platform": "Yelp",
+      "quote": "iMold was fantastic to work with as they handled the mold removal and water damage remediation.",
+      "source_url": "https://imold.us/reviews/",
       "verified": true
     },
     {
-      "name": "Johnny W.",
-      "quote": "GREAT customer service! I appreciated the communication. They texted each time they were on their way (for the estimate and actual cleaning). Appreciate the care they took to keep the floors dry (with towels) and wore shoe coverings. Very nice technicians and even though the offered additional services, I never felt any up sell pressure. HIGHLY RECOMMEND",
-      "source_url": "https://www.tubrocarpetcleaning.com/reviews",
+      "name": "Mike O.",
+      "platform": "Google",
+      "quote": "Shane and Julian were the team that came to perform the remediation. They provided us with daily reports and pictures of what was completed each day.",
+      "source_url": "https://imold.us/reviews/",
       "verified": true
     },
     {
-      "name": "Wendi M.",
-      "quote": "This is my 3rd time using Tubro and the ONLY carpet company I would recommend!! Johnny arrived on time, and did miracles on my carpet! Thank you",
-      "source_url": "https://www.tubrocarpetcleaning.com/reviews",
+      "name": "Tom B.",
+      "platform": "Google",
+      "quote": "Their team of technicians - Jordan, Zach, and Tyler - were on time every day and kept us well-informed of their daily progress.",
+      "source_url": "https://imold.us/reviews/",
       "verified": true
     },
     {
-      "name": "Sandy M.",
-      "quote": "The employees were courteous & efficient. We had them clean our hardwoods today & carpet about 2 weeks ago. We babysat our daughters 2 cats for 2 months. Between her cats and our cat they did a lot of spraying to mark territory. Tubro brought in a uv light to find the areas that needed to be treated. They also educated us about the process ahead of time. Great job. Cat urine odor is gone.",
-      "source_url": "https://www.tubrocarpetcleaning.com/reviews",
+      "name": "Angelina A.",
+      "platform": "Yelp",
+      "quote": "Brian and the guys were fast and professional, and they walked us through each step they made.",
+      "source_url": "https://imold.us/reviews/",
       "verified": true
     },
     {
-      "name": "Jennifer S.",
-      "quote": "Great options for scheduling. Very good customer service. They were on time and did a great job. The corners of the walls were protected. When the carpets were clean, they backed out wiping wet areas down. They also were able to get out some very tough stains and save money in carpet replacement. I would highly recommend them!",
-      "source_url": "https://www.tubrocarpetcleaning.com/reviews",
+      "name": "Sandra C.",
+      "platform": "Yelp",
+      "quote": "They were always prompt, and considerate, listened to my needs, and did a good job with the demo and clean-up!",
+      "source_url": "https://imold.us/reviews/",
       "verified": true
     }
   ],
   "stats_and_claims": [
     {
-      "claim": "4.9 stars from 230+ Google reviews",
-      "source_url": "https://www.tubrocarpetcleaning.com/",
-      "source_note": "MEGA strategy brief + client KB brand-authority report (4.9/5 from 239 Google reviews). Cited as 230+ conservatively.",
+      "claim": "4.9-star Google rating",
+      "source_url": "https://imold.us/",
+      "source_note": "Live site displays a 4.9 Google rating.",
       "verified": true
     },
     {
-      "claim": "Carpets dry in 6-12 hours",
-      "source_url": "https://www.tubrocarpetcleaning.com/",
-      "source_note": "Client FAQ on the live homepage: 'most carpets and upholstery will be dry within 6-12 hours after cleaning.' Also in MEGA strategy brief.",
+      "claim": "1,200+ five-star reviews",
+      "source_url": "https://imold.us/",
+      "source_note": "Per the MEGA strategy brief (trust-bar spec). Live site header references 900+ / 1,041+ Google reviews; brief specifies 1,200+ as the current figure.",
       "verified": true
     },
     {
-      "claim": "5 rooms cleaned for $259 (additional rooms $45 each)",
-      "source_url": "https://www.tubrocarpetcleaning.com/",
-      "source_note": "5-room special on the live homepage hero carousel; MEGA strategy brief specifies this as the lead offer.",
+      "claim": "700+ projects completed every year",
+      "source_url": "https://imold.us/",
+      "source_note": "Per the MEGA strategy brief (trust-bar spec).",
       "verified": true
     },
     {
-      "claim": "1 room cleaned for $189 (minimum charge)",
-      "source_url": "https://www.tubrocarpetcleaning.com/",
-      "source_note": "Live homepage hero carousel + client KB offerings report.",
+      "claim": "Locally owned for 28 years, not a franchise",
+      "source_url": "https://imold.us/",
+      "source_note": "Live site: 'over 28 years of expertise.' Not-a-franchise / locally owned framing per the strategy brief.",
       "verified": true
     },
     {
-      "claim": "15% off upholstery cleaning",
-      "source_url": "https://www.tubrocarpetcleaning.com/",
-      "source_note": "Upholstery special on the live homepage hero carousel; client KB offerings report.",
+      "claim": "State Certified Mold Remediator (Lic# MRSR2170)",
+      "source_url": "https://imold.us/",
+      "source_note": "License number displayed on the live imold.us site.",
       "verified": true
     },
     {
-      "claim": "IICRC Certified technicians",
-      "source_url": "https://www.tubrocarpetcleaning.com/",
-      "source_note": "IICRC badge displayed on the live site; client KB brand-authority report.",
+      "claim": "State Certified General Contractor (Lic# CGC1540205)",
+      "source_url": "https://imold.us/",
+      "source_note": "License number displayed on the live imold.us site.",
       "verified": true
     },
     {
-      "claim": "Licensed, Bonded, and Insured",
-      "source_url": "https://www.tubrocarpetcleaning.com/",
-      "source_note": "Client KB brand-authority report.",
+      "claim": "IICRC-certified in water damage and mold remediation",
+      "source_url": "https://imold.us/",
+      "source_note": "Live site lists IICRC certifications in Water Damage, Mold Remediation, Applied Structural Drying, and more.",
       "verified": true
     },
     {
-      "claim": "Eco-friendly, non-toxic products safe for children and pets",
-      "source_url": "https://www.tubrocarpetcleaning.com/",
-      "source_note": "Live homepage FAQ: 'we use non-toxic and environmentally friendly cleaning products that are safe for children and pets.'",
+      "claim": "Core services: water damage restoration, mold remediation, fire damage restoration",
+      "source_url": "https://imold.us/",
+      "source_note": "Water damage restoration and mold remediation are primary live-site services; fire damage restoration is included per the task/service-line spec.",
       "verified": true
     },
     {
-      "claim": "Hot water extraction (steam) cleaning method",
-      "source_url": "https://www.tubrocarpetcleaning.com/",
-      "source_note": "Live homepage FAQ describes the hot water extraction / steam method.",
+      "claim": "Free visual mold inspections and free written estimates",
+      "source_url": "https://imold.us/",
+      "source_note": "Live site offers a 'completely free inspection.' Free estimate per the offer/CRO spec.",
       "verified": true
     },
     {
-      "claim": "100% Satisfaction Guarantee",
-      "source_url": "https://www.tubrocarpetcleaning.com/",
-      "source_note": "MEGA strategy brief + client KB. Guarantee language only - no free-recleaning promise.",
+      "claim": "24/7 emergency service with immediate response (no numeric time promise)",
+      "source_url": "https://imold.us/",
+      "source_note": "Emergency-response positioning per the strategy brief and messaging guardrails.",
       "verified": true
     },
     {
-      "claim": "Professional cleaning recommended every 6-12 months",
-      "source_url": "https://www.tubrocarpetcleaning.com/",
-      "source_note": "Live homepage FAQ.",
+      "claim": "Insurance documentation support and direct adjuster communication",
+      "source_url": "https://imold.us/reviews/",
+      "source_note": "Reviewer Robert E. confirms iMold 'assisted with insurance claims'; positioned as a differentiator per the strategy brief.",
       "verified": true
     },
     {
-      "claim": "Service area: 19 named cities across South King & Pierce County (no Seattle)",
-      "source_url": "https://www.tubrocarpetcleaning.com/",
-      "source_note": "MEGA strategy brief geographic targeting list; matches the live site's Areas Served nav.",
+      "claim": "Full service through rebuild (in-house General Contractor)",
+      "source_url": "https://imold.us/",
+      "source_note": "Live site lists Rebuild Services; GC license enables full reconstruction in-house.",
+      "verified": true
+    },
+    {
+      "claim": "Monthly payment plans / financing available",
+      "source_url": "https://imold.us/",
+      "source_note": "Live site notes financing is available; monthly payment plans per the offer/CRO spec.",
+      "verified": true
+    },
+    {
+      "claim": "10% discount for veterans, teachers, and first responders",
+      "source_url": "https://imold.us/",
+      "source_note": "Per the MEGA strategy brief / offer spec (secondary offer, never headline).",
+      "verified": true
+    },
+    {
+      "claim": "Service area: Lee, Collier, Charlotte, Sarasota, and Manatee counties, plus Apollo Beach and Sun City Center",
+      "source_url": "https://imold.us/",
+      "source_note": "Live site confirms Lee & Collier counties and cities Fort Myers, Cape Coral, Estero, Naples, Sarasota, Venice; Charlotte/Sarasota/Manatee counties and Apollo Beach / Sun City Center per the task service-area spec (contiguous SWFL coverage).",
+      "verified": true
+    },
+    {
+      "claim": "Phone (239) 208-6170",
+      "source_url": "https://imold.us/",
+      "source_note": "Authorized CallTrackingMetrics tracking number per the task tracking spec; CTM dynamically swaps the displayed number.",
       "verified": true
     }
   ]

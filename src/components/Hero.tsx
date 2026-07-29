@@ -3,95 +3,98 @@ import type { JSX } from "react";
 import { LeadForm } from "./LeadForm";
 import { CTAButtons } from "./CTAButtons";
 import { Icon, Stars } from "./Icons";
-import { OFFER_PRICE, OFFER_EXTRA, RATING, REVIEW_COUNT } from "./Brand";
+import { RATING, REVIEW_COUNT } from "./Brand";
 
 const TRUST_POINTS = [
-  { icon: "shieldCheck" as const, label: "IICRC Certified" },
-  { icon: "clock" as const, label: "Dry in 6–12 hours" },
-  { icon: "leaf" as const, label: "Safe for kids & pets" },
+  { icon: "clock" as const, label: "24/7 emergency response" },
+  { icon: "search" as const, label: "Free visual inspections" },
+  { icon: "fileText" as const, label: "Insurance paperwork handled" },
+  { icon: "award" as const, label: "Licensed & IICRC-certified" },
 ];
 
 export function Hero(): JSX.Element {
   return (
-    <section id="hero" className="relative overflow-hidden bg-[var(--color-secondary)]">
-      {/* Background carpet photo + legibility overlay */}
+    <section
+      id="hero"
+      className="relative overflow-hidden bg-[var(--color-primary)]"
+    >
+      {/* Background: branded iMold vans on-site + legibility overlay */}
       <div className="absolute inset-0" aria-hidden="true">
         <Image
-          src="/images/hero-carpet.jpg"
+          src="/images/hero-vans.webp"
           alt=""
           fill
           priority
           sizes="100vw"
-          className="object-cover opacity-25"
+          className="object-cover object-center opacity-30"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-secondary)] via-[var(--color-secondary)]/90 to-[#0b322a]/85" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)] via-[var(--color-primary)]/92 to-[#081722]/85" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-primary)] via-transparent to-transparent" />
       </div>
 
       <div className="relative max-w-[1200px] mx-auto px-5 lg:px-8 py-10 sm:py-16 lg:py-20">
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-8 lg:gap-12 items-center">
-          {/* ── Left: value prop + offer + trust ── */}
+          {/* ── Left: value prop + trust ── */}
           <div className="text-white">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 ring-1 ring-white/20 px-3 py-1.5 text-sm font-semibold">
+            <div className="inline-flex items-center gap-2.5 rounded-full bg-white/10 ring-1 ring-white/15 px-3.5 py-1.5 text-sm font-semibold">
               <Stars size={16} />
               <span>
-                {RATING} stars · {REVIEW_COUNT} Google reviews
+                {RATING} · {REVIEW_COUNT} five-star Google reviews
               </span>
             </div>
 
-            <h1 className="mt-5 text-[clamp(2.25rem,5vw,3.75rem)] font-extrabold leading-[1.05] text-white">
-              Professional Carpet Cleaning Across South King &amp; Pierce County
+            <h1 className="mt-5 text-[clamp(2.35rem,5vw,3.9rem)] font-extrabold leading-[1.03] text-white">
+              Water &amp; mold emergencies,{" "}
+              <span className="text-[var(--color-secondary)]">handled</span> —
+              24/7.
             </h1>
 
-            <p className="mt-4 text-lg text-white/85 max-w-xl leading-relaxed">
-              Get 5 rooms professionally cleaned for{" "}
-              <span className="font-bold text-white">{OFFER_PRICE}</span> —{" "}
-              {OFFER_EXTRA.toLowerCase()}. IICRC-certified technicians, eco-friendly
-              products, and carpets dry in 6–12 hours.
+            <p className="mt-5 text-lg text-white/80 max-w-xl leading-relaxed">
+              When water or mold hits your home, iMold responds immediately with
+              a free visual inspection, a clear estimate, and one state-licensed
+              local team that stays with you from cleanup all the way through the
+              rebuild.
             </p>
 
-            {/* Offer chip */}
-            <div className="mt-6 inline-flex items-stretch rounded-xl overflow-hidden bg-white shadow-lg">
-              <div className="bg-[var(--color-accent)] px-4 flex items-center">
-                <Icon name="tag" size={26} className="text-[#1A1A1A]" />
-              </div>
-              <div className="px-4 py-2.5 pr-5">
-                <div className="text-xs font-bold uppercase tracking-wide text-[var(--color-text-muted)]">
-                  5-Room Special
-                </div>
-                <div className="text-2xl font-extrabold text-[var(--color-secondary)] leading-none">
-                  {OFFER_PRICE}
-                  <span className="ml-2 text-sm font-semibold text-[var(--color-text-muted)]">
-                    {OFFER_EXTRA}
-                  </span>
-                </div>
-              </div>
+            {/* Risk-reversal highlight */}
+            <div className="mt-6 inline-flex items-center gap-3 rounded-xl bg-[var(--color-accent)]/15 ring-1 ring-[var(--color-accent)]/40 px-4 py-2.5">
+              <Icon
+                name="shieldCheck"
+                size={22}
+                className="text-[var(--color-accent)] shrink-0"
+              />
+              <span className="text-sm sm:text-base font-semibold text-white">
+                Free visual inspection &amp; written estimate — no obligation
+              </span>
             </div>
 
-            {/* Trust row */}
-            <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
+            {/* Trust grid */}
+            <ul className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
               {TRUST_POINTS.map((t) => (
                 <li
                   key={t.label}
-                  className="flex items-center gap-2 text-sm font-medium text-white/90"
+                  className="flex items-center gap-2.5 text-sm font-medium text-white/90"
                 >
-                  <Icon name={t.icon} size={18} className="text-[var(--color-teal)]" />
+                  <span className="grid place-items-center h-8 w-8 rounded-lg bg-white/10 text-[var(--color-secondary)] shrink-0">
+                    <Icon name={t.icon} size={18} />
+                  </span>
                   {t.label}
                 </li>
               ))}
             </ul>
 
-            <div className="mt-7 hidden sm:block">
-              <CTAButtons tone="light" bookLabel="Book My Carpet Cleaning" />
+            <div className="mt-8 hidden sm:block">
+              <CTAButtons />
             </div>
           </div>
 
           {/* ── Right: lead form ── */}
-          <div className="lg:pl-4">
+          <div id="lead-form" className="lg:pl-4 scroll-mt-24">
             <LeadForm
               variant="hero"
               formId="hero"
-              headline="Book Your Cleaning"
-              subhead="Tell us where you are and what you need — we'll call to confirm, often same or next day."
+              headline="Get your free inspection"
+              subhead="Tell us about the damage and we'll reach out right away. For an active emergency, call us — we respond 24/7."
             />
           </div>
         </div>

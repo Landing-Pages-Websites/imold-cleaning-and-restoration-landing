@@ -5,7 +5,6 @@ interface SectionHeadingProps {
   title: ReactNode;
   subtitle?: ReactNode;
   align?: "start" | "center";
-  tone?: "dark" | "light";
 }
 
 export function SectionHeading({
@@ -13,36 +12,25 @@ export function SectionHeading({
   title,
   subtitle,
   align = "center",
-  tone = "dark",
 }: SectionHeadingProps): JSX.Element {
-  const isLight = tone === "light";
   return (
     <div
-      className={`${align === "center" ? "text-center mx-auto" : "text-left"} max-w-2xl ${
-        align === "center" ? "" : ""
-      }`}
+      className={`${align === "center" ? "text-center mx-auto" : "text-left"} max-w-2xl`}
     >
       {eyebrow && (
-        <span
-          className={`inline-block text-xs font-bold uppercase tracking-[0.14em] ${
-            isLight ? "text-[var(--color-teal)]" : "text-[var(--color-primary-dark)]"
-          }`}
-        >
+        <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[var(--color-accent)]">
+          <span className="accent-rule w-6" aria-hidden="true" />
           {eyebrow}
         </span>
       )}
-      <h2
-        className={`mt-2 text-[clamp(1.9rem,3.5vw,2.75rem)] font-extrabold leading-[1.1] ${
-          isLight ? "text-white" : "text-[var(--color-secondary)]"
-        }`}
-      >
+      <h2 className="mt-3 text-[clamp(1.9rem,3.6vw,2.75rem)] font-extrabold leading-[1.1] text-white">
         {title}
       </h2>
       {subtitle && (
         <p
-          className={`mt-3.5 text-lg leading-relaxed ${
-            isLight ? "text-white/85" : "text-[var(--color-text-muted)]"
-          } ${align === "center" ? "mx-auto" : ""}`}
+          className={`mt-4 text-lg leading-relaxed text-[var(--color-text-muted)] ${
+            align === "center" ? "mx-auto" : ""
+          }`}
         >
           {subtitle}
         </p>

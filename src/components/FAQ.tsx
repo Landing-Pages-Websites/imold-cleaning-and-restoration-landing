@@ -19,7 +19,11 @@ function Item({
   idBase: string;
 }): JSX.Element {
   return (
-    <div className="rounded-xl bg-white ring-1 ring-[var(--color-border)] overflow-hidden">
+    <div
+      className={`rounded-xl bg-[var(--color-surface)] ring-1 overflow-hidden transition-colors ${
+        open ? "ring-[var(--color-secondary)]/40" : "ring-[var(--color-hairline)]"
+      }`}
+    >
       <h3>
         <button
           type="button"
@@ -27,11 +31,11 @@ function Item({
           aria-expanded={open}
           aria-controls={`${idBase}-panel`}
           id={`${idBase}-btn`}
-          className="w-full flex items-center justify-between gap-4 text-left px-5 sm:px-6 py-4 font-bold text-[var(--color-secondary)] hover:bg-[var(--color-soft)] transition"
+          className="w-full flex items-center justify-between gap-4 text-left px-5 sm:px-6 py-4.5 font-bold text-white hover:bg-white/5 transition"
         >
           <span>{q}</span>
           <span
-            className={`shrink-0 text-[var(--color-primary-dark)] transition-transform duration-200 ${
+            className={`shrink-0 text-[var(--color-secondary)] transition-transform duration-200 ${
               open ? "rotate-180" : ""
             }`}
           >
@@ -57,12 +61,15 @@ export function FAQ(): JSX.Element {
   const uid = useId();
 
   return (
-    <section id="faq" className="bg-white py-16 sm:py-20 lg:py-24">
+    <section
+      id="faq"
+      className="bg-[var(--color-surface)] py-16 sm:py-20 lg:py-24 border-t border-[var(--color-hairline)]"
+    >
       <div className="max-w-3xl mx-auto px-5 lg:px-8">
         <SectionHeading
           eyebrow="FAQ"
           title="Questions, answered"
-          subtitle="The things South King & Pierce County homeowners ask us most before they book."
+          subtitle="What Southwest Florida homeowners ask us most before they call."
         />
 
         <div className="mt-10 space-y-3">

@@ -1,33 +1,39 @@
 @import "tailwindcss";
 
 @theme {
-  /* Tubro Carpet Cleaning — brand tokens (from client color_roles).
-   * Green #43934B primary, deep green #0F4034 secondary, orange #FFA400 offer accent,
-   * teal #68CCD1 focus. Button fill uses #2E7D36 so white labels pass AA (5.1:1).
+  /* iMold Cleaning and Restoration — dark navy brand tokens (from client color_roles).
+   * primary navy #0B1E2E, brand blue #4EA8CF (CTA + accents), green #68A553 accent/focus.
+   * The primary CTA keeps the mandated #4EA8CF fill but uses dark-navy text so labels
+   * pass AA (6.3:1); white-on-#4EA8CF would only be 2.7:1.
    */
-  --color-primary: #43934b;          /* brand green — accents, icons, headings */
-  --color-primary-dark: #2e7d36;     /* AA-safe green — links, button fill */
-  --color-secondary: #0f4034;        /* deep green — bands, footer, hover */
-  --color-accent: #ffa400;           /* warm orange — offer/urgency micro-accents */
-  --color-accent-soft: #fff4de;      /* soft orange tint for offer surfaces */
-  --color-teal: #68ccd1;             /* teal — focus rings, chips */
-  --color-teal-soft: #e3f5f6;
+  --color-primary: #0b1e2e;          /* deep navy — background, deepest surfaces */
+  --color-secondary: #4ea8cf;        /* brand blue — CTA fill, accents, rings, icons */
+  --color-secondary-hover: #3e97be;  /* CTA hover (slightly darker blue) */
+  --color-secondary-active: #368bb2; /* CTA pressed */
+  --color-accent: #68a553;           /* green — rules, badges, focus ring */
+  --color-accent-dark: #12805c;      /* success green */
 
-  --color-cta: #2e7d36;              /* primary button fill */
-  --color-cta-dark: #0f4034;         /* primary button hover */
+  --color-bg: #0b1e2e;               /* page background (navy) */
+  --color-surface: #102a3c;          /* raised cards / alt panels */
+  --color-surface-2: #16374d;        /* hover / nested elevation */
+  --color-text: #ffffff;             /* body text on dark */
+  --color-text-muted: #b6b6b6;       /* muted text on dark */
+  --color-hairline: rgba(255, 255, 255, 0.1);  /* subtle borders on dark */
+  --color-hairline-strong: rgba(255, 255, 255, 0.18);
 
-  --color-bg: #ffffff;
-  --color-soft: #f4f7f4;             /* surface — raised cards, alt sections */
-  --color-text: #1a1a1a;
-  --color-text-muted: #5b6660;
-  --color-border: #dce4de;
-  --color-link: #2e7d36;
-  --color-focus: #68ccd1;
-  --color-success: #2e7d36;
-  --color-error: #c0392b;
+  /* Light-surface tokens (the white lead-form card) */
+  --color-card: #ffffff;
+  --color-ink: #0b1e2e;              /* dark text on light surfaces */
+  --color-ink-muted: #55636b;
+  --color-border: #e5e7eb;
 
-  --font-display: var(--font-poppins), system-ui, sans-serif;
-  --font-body: var(--font-poppins), system-ui, sans-serif;
+  --color-cta-text: #06131d;         /* near-navy CTA label (AA on #4EA8CF) */
+  --color-focus: #68a553;
+  --color-success: #12805c;
+  --color-error: #d92d20;
+
+  --font-display: var(--font-archivo), system-ui, sans-serif;
+  --font-body: var(--font-roboto), system-ui, sans-serif;
 }
 
 html {
@@ -42,7 +48,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 1.0625rem;
-  line-height: 1.65;
+  line-height: 1.6;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -50,7 +56,7 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.02em;
   color: var(--color-text);
 }
-h1 { letter-spacing: -0.03em; line-height: 1.05; }
+h1 { letter-spacing: -0.035em; line-height: 1.04; }
 
 *:focus-visible {
   outline: 2px solid var(--color-focus);
@@ -66,32 +72,32 @@ h1 { letter-spacing: -0.03em; line-height: 1.05; }
   }
 }
 
-/* ───────────── Form inputs ───────────── */
+/* ───────────── Form inputs (on the light form card) ───────────── */
 .lp-input {
   width: 100%;
   border: 1px solid var(--color-border);
   background: #ffffff;
-  border-radius: 0.5rem;
-  padding: 0.75rem 0.875rem;
+  border-radius: 0.625rem;
+  padding: 0.8rem 0.9rem;
   font-size: 1rem;
   font-family: var(--font-body);
-  color: var(--color-text);
+  color: var(--color-ink);
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-.lp-input::placeholder { color: var(--color-text-muted); opacity: 0.85; }
+.lp-input::placeholder { color: var(--color-ink-muted); opacity: 0.8; }
 .lp-input:focus {
-  border-color: var(--color-cta);
-  box-shadow: 0 0 0 3px rgba(104, 204, 209, 0.45);
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px rgba(104, 165, 83, 0.4);
   outline: none;
 }
-.lp-input:disabled { background: var(--color-soft); color: #b7c2bb; }
+.lp-input:disabled { background: #f1f4f6; color: #9aa6ad; }
 .lp-input-error {
   border-color: var(--color-error) !important;
   background: #fdf3f2;
 }
 .lp-input-error:focus {
   border-color: var(--color-error) !important;
-  box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.16);
+  box-shadow: 0 0 0 3px rgba(217, 45, 32, 0.16);
 }
 .lp-field-error {
   margin-top: 0.375rem;
@@ -104,90 +110,106 @@ h1 { letter-spacing: -0.03em; line-height: 1.05; }
   display: block;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--color-ink);
   margin-bottom: 0.375rem;
 }
 
 /* ───────────── Buttons ───────────── */
+/* Primary CTA — brand blue fill, dark-navy label (AA), soft lift */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: var(--color-cta);
-  color: #ffffff;
+  background: var(--color-secondary);
+  color: var(--color-cta-text);
   font-weight: 700;
   padding: 0.9rem 1.6rem;
-  border-radius: 0.5rem;
+  border-radius: 0.625rem;
   font-family: var(--font-display);
   font-size: 1rem;
   line-height: 1.2;
-  box-shadow: 0 4px 14px -4px rgba(15, 64, 52, 0.45);
-  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+  letter-spacing: -0.01em;
+  box-shadow: 0 6px 20px -6px rgba(78, 168, 207, 0.55);
+  transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
   cursor: pointer;
 }
 .btn-primary:hover {
-  background: var(--color-cta-dark);
+  background: var(--color-secondary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 8px 22px -6px rgba(15, 64, 52, 0.5);
+  box-shadow: 0 12px 28px -8px rgba(78, 168, 207, 0.6);
 }
-.btn-primary:active { transform: translateY(0); box-shadow: none; }
+.btn-primary:active {
+  background: var(--color-secondary-active);
+  transform: translateY(0);
+  box-shadow: none;
+}
 .btn-primary:disabled {
-  background: #b7c2bb;
+  background: #9daab2;
+  color: #eef2f4;
   box-shadow: none;
   cursor: not-allowed;
   transform: none;
 }
 
+/* Secondary — outline for dark backgrounds (phone / call) */
 .btn-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border: 2px solid var(--color-secondary);
-  color: var(--color-secondary);
+  border: 1.5px solid var(--color-hairline-strong);
+  color: #ffffff;
   font-weight: 700;
-  padding: 0.8rem 1.5rem;
-  border-radius: 0.5rem;
+  padding: calc(0.9rem - 1.5px) 1.5rem;
+  border-radius: 0.625rem;
   font-family: var(--font-display);
   font-size: 1rem;
   line-height: 1.2;
-  background: transparent;
-  transition: background 0.15s, color 0.15s;
+  background: rgba(255, 255, 255, 0.04);
+  transition: background 0.18s, border-color 0.18s;
   cursor: pointer;
 }
-.btn-secondary:hover { background: var(--color-secondary); color: #ffffff; }
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
 
-/* Light outline button for use on the deep-green bands */
-.btn-outline-light {
+/* Ghost call button for the white sticky bar / light contexts */
+.btn-call-light {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  color: #ffffff;
+  border: 1.5px solid var(--color-secondary);
+  color: #0e5d7d;
   font-weight: 700;
-  padding: 0.8rem 1.5rem;
-  border-radius: 0.5rem;
+  padding: calc(0.9rem - 1.5px) 1.4rem;
+  border-radius: 0.625rem;
   font-family: var(--font-display);
   font-size: 1rem;
   line-height: 1.2;
-  background: transparent;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  background: #ffffff;
+  transition: background 0.18s, border-color 0.18s;
   cursor: pointer;
 }
-.btn-outline-light:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: #ffffff;
-}
+.btn-call-light:hover { background: #eef7fb; }
 
 /* Chip / pill */
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: 0.4rem;
   border-radius: 9999px;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   line-height: 1;
+}
+
+/* Green accent rule */
+.accent-rule {
+  height: 3px;
+  width: 3rem;
+  border-radius: 9999px;
+  background: var(--color-accent);
 }
