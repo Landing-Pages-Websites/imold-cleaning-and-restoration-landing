@@ -542,6 +542,7 @@ function TextField(props: TextFieldProps): JSX.Element {
         inputMode={inputMode}
         pattern={pattern}
         placeholder={placeholder}
+        required
         className={inputCls}
         value={value}
         onChange={(e) => onChange(e.target.value)}
