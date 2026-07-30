@@ -83,7 +83,7 @@ export function Hero(): JSX.Element {
               ))}
             </ul>
 
-            <div className="mt-8 hidden sm:block">
+            <div className="mt-8">
               <CTAButtons />
             </div>
           </div>

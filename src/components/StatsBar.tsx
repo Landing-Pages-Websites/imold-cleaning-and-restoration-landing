@@ -1,4 +1,3 @@
-import Image from "next/image";
 import type { JSX } from "react";
 import { Icon, Stars, type IconName } from "./Icons";
 import {
@@ -48,13 +47,6 @@ export function StatsBar(): JSX.Element {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-5 items-center lg:divide-x divide-[var(--color-hairline)]">
           {/* Google rating */}
           <div className="flex items-center gap-3 lg:pr-6 col-span-2 md:col-span-1">
-            <Image
-              src="/images/googlelogo.svg"
-              alt="Google"
-              width={26}
-              height={26}
-              className="h-6 w-6 shrink-0"
-            />
             <div>
               <div className="flex items-center gap-1.5">
                 <Stars size={15} />
