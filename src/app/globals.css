@@ -12,6 +12,8 @@
   --color-secondary-active: #368bb2; /* CTA pressed */
   --color-accent: #68a553;           /* green — rules, badges, focus ring */
   --color-accent-dark: #12805c;      /* success green */
+  --color-warm: #f2a65a;             /* friendly amber — warm accents only (never CTAs) */
+  --color-warm-soft: rgba(242, 166, 90, 0.14); /* low-opacity amber wash / glow */
 
   --color-bg: #0b1e2e;               /* page background (navy) */
   --color-surface: #102a3c;          /* raised cards / alt panels */
@@ -212,4 +214,24 @@ h1 { letter-spacing: -0.035em; line-height: 1.04; }
   width: 3rem;
   border-radius: 9999px;
   background: var(--color-accent);
+}
+
+/* Warm amber rule — sparing use to break the navy monotony */
+.warm-rule {
+  height: 3px;
+  width: 3rem;
+  border-radius: 9999px;
+  background: var(--color-warm);
+}
+
+/* Soft warm transition band — a thin glow to break up stacked navy sections */
+.warm-band {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-warm) 50%,
+    transparent
+  );
+  opacity: 0.5;
 }

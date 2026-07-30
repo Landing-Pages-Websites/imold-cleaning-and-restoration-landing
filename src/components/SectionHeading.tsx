@@ -5,6 +5,8 @@ interface SectionHeadingProps {
   title: ReactNode;
   subtitle?: ReactNode;
   align?: "start" | "center";
+  /** Eyebrow accent color. "warm" swaps the green rule for amber. */
+  tone?: "accent" | "warm";
 }
 
 export function SectionHeading({
@@ -12,14 +14,23 @@ export function SectionHeading({
   title,
   subtitle,
   align = "center",
+  tone = "accent",
 }: SectionHeadingProps): JSX.Element {
+  const warm = tone === "warm";
   return (
     <div
       className={`${align === "center" ? "text-center mx-auto" : "text-left"} max-w-2xl`}
     >
       {eyebrow && (
-        <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[var(--color-accent)]">
-          <span className="accent-rule w-6" aria-hidden="true" />
+        <span
+          className={`inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] ${
+            warm ? "text-[var(--color-warm)]" : "text-[var(--color-accent)]"
+          }`}
+        >
+          <span
+            className={`${warm ? "warm-rule" : "accent-rule"} w-6`}
+            aria-hidden="true"
+          />
           {eyebrow}
         </span>
       )}

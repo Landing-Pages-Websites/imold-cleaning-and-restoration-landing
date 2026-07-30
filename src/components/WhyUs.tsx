@@ -49,8 +49,10 @@ export function WhyUs(): JSX.Element {
   return (
     <section
       id="why-imold"
-      className="bg-[var(--color-primary)] py-16 sm:py-20 lg:py-24 border-t border-[var(--color-hairline)]"
+      className="relative bg-[var(--color-primary)] py-16 sm:py-20 lg:py-24 border-t border-[var(--color-hairline)]"
     >
+      {/* Warm transition band — breaks up the stacked navy sections */}
+      <div className="warm-band absolute inset-x-0 top-0" aria-hidden="true" />
       <div className="max-w-[1200px] mx-auto px-5 lg:px-8">
         <SectionHeading
           eyebrow="Why iMold"

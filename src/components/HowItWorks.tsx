@@ -34,7 +34,7 @@ export function HowItWorks(): JSX.Element {
                     <Icon name={STEP_ICON[step.icon]} size={24} />
                   </span>
                   <span
-                    className="font-display text-4xl font-extrabold text-white/10"
+                    className="font-display text-4xl font-extrabold text-[var(--color-warm)]/20"
                     aria-hidden="true"
                   >
                     {String(step.n).padStart(2, "0")}
