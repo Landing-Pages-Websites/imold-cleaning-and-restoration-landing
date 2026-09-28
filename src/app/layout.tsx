@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   title:
     "iMold Cleaning and Restoration | 24/7 Water Damage & Mold Removal in Southwest Florida",
   description:
-    "24/7 water damage restoration and mold remediation across Southwest Florida. Free visual inspections, insurance paperwork handled, and full rebuild by a state-licensed, IICRC-certified team. Locally owned for 28 years — 1,200+ 5-star reviews. Call (239) 208-6170.",
+    "24/7 water damage restoration and mold remediation across Southwest Florida. Free visual inspections, insurance paperwork handled, and full rebuild by a state-licensed, IICRC-certified team. Locally owned for 28 years — 1,200+ 5-star reviews. Call (239) 326-0357.",
   openGraph: {
     title:
       "iMold Cleaning and Restoration | 24/7 Water Damage & Mold Removal",

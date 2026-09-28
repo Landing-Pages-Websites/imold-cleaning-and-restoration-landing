@@ -18,9 +18,9 @@ export const GTM_ID = "GTM-57XX8DZ8";
 export const META_PIXEL_ID = "646520244571270";
 
 // ─── Contact ───
-// Display the CTM tracking number everywhere; CTM (t.js) dynamically swaps it.
-export const PHONE_DISPLAY = "(239) 208-6170";
-export const PHONE_HREF = "tel:+12392086170";
+// Customer-facing phone, displayed everywhere; the CTM loader (t.js) remains installed.
+export const PHONE_DISPLAY = "(239) 326-0357";
+export const PHONE_HREF = "tel:+12393260357";
 export const EMAIL = "frontoffice@imold.us";
 export const EMAIL_HREF = "mailto:frontoffice@imold.us";
 export const ADDRESS = "Fort Myers, FL";
