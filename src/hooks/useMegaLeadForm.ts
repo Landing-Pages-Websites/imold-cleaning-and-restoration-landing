@@ -1,6 +1,14 @@
 "use client";
 
 import { useEffect, useCallback, useRef, useState } from "react";
+import {
+  EMAIL_ERROR,
+  PHONE_ERROR,
+  isValidEmail,
+  isValidPhone,
+  normalizeEmail,
+  phoneDigits,
+} from "@/lib/fields";
 
 const ENDPOINT = "https://analytics.gomega.ai/submission/submit";
 
@@ -32,6 +40,11 @@ interface LeadFormConfig {
 }
 
 type Status = "idle" | "submitting" | "success" | "error";
+
+interface SubmissionResponse {
+  ok: true;
+  id?: string;
+}
 
 interface FormState {
   status: Status;
@@ -133,7 +146,83 @@ const initAttribution = (): Attribution => {
   return attribution;
 };
 
-export function useMegaLeadForm(config: LeadFormConfig) {
+const REQUIRED_FIELDS_ERROR = "First name and email are required";
+const UNCONFIRMED_ERROR = "Submission not confirmed by server";
+const INVALID_RESPONSE_ERROR = "Invalid server response";
+
+/** Validates with the canonical field rules and returns a normalized copy. */
+const validateLeadData = (formData: Record<string, unknown>): Record<string, unknown> => {
+  if (!formData.firstName || !formData.email) throw new Error(REQUIRED_FIELDS_ERROR);
+  const phone = String(formData.phone ?? "");
+  if (!isValidPhone(phone)) throw new Error(PHONE_ERROR);
+  if (!isValidEmail(formData.email)) throw new Error(EMAIL_ERROR);
+  return { ...formData, phone: phoneDigits(phone), email: normalizeEmail(String(formData.email)) };
+};
+
+const buildPayload = (config: LeadFormConfig, formData: Record<string, unknown>) => {
+  const attribution = initAttribution();
+  return {
+    customer_id: config.customerId,
+    site_id: config.siteId,
+    source_provider: config.sourceProvider,
+    form_data: formData,
+    url: window.location.href,
+    referrer_url: document.referrer || null,
+    session_id: getSessionId(),
+    visitor_id: getVisitorId(),
+    utm_source: attribution.utm_source,
+    utm_medium: attribution.utm_medium,
+    utm_campaign: attribution.utm_campaign,
+    utm_term: attribution.utm_term,
+    utm_content: attribution.utm_content,
+    gclid: attribution.gclid,
+    gbraid: attribution.gbraid,
+    wbraid: attribution.wbraid,
+    fbclid: attribution.fbclid,
+    fbp: attribution.fbp,
+    fbc: attribution.fbc,
+  };
+};
+
+const isAccepted = (body: unknown): body is SubmissionResponse =>
+  typeof body === "object" && body !== null && (body as { ok?: unknown }).ok === true;
+
+/** Resolves only when the server confirms the lead: HTTP success AND body `ok === true`. */
+const postLead = async (payload: ReturnType<typeof buildPayload>): Promise<SubmissionResponse> => {
+  const response = await fetch(ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) throw new Error(`Submission failed: ${response.status}`);
+  let body: unknown;
+  try {
+    body = await response.json();
+  } catch {
+    throw new Error(INVALID_RESPONSE_ERROR);
+  }
+  if (!isAccepted(body)) throw new Error(UNCONFIRMED_ERROR);
+  return body;
+};
+
+const dispatchSubmitEvent = (formData: Record<string, unknown>, pagePath?: string): void => {
+  try {
+    window.dispatchEvent(
+      new CustomEvent("mega:form_submit", {
+        detail: { form_data: formData, page_path: pagePath || window.location.pathname },
+      })
+    );
+  } catch {
+    // A tracking integration must never turn an accepted lead into a failure.
+  }
+};
+
+interface UseMegaLeadFormReturn extends FormState {
+  submitLead: (formData: Record<string, unknown>) => Promise<SubmissionResponse>;
+  reset: () => void;
+}
+
+export function useMegaLeadForm(config: LeadFormConfig): UseMegaLeadFormReturn {
   const isInitialized = useRef(false);
   const [state, setState] = useState<FormState>({ status: "idle", errorMessage: "" });
 
@@ -144,83 +233,23 @@ export function useMegaLeadForm(config: LeadFormConfig) {
     }
   }, []);
 
+  /** Throws on validation, HTTP, network or unconfirmed-body failure; returns the accepted body. */
   const submitLead = useCallback(
-    async (formData: Record<string, unknown>) => {
-      if (state.status === "submitting") return;
-
-      // Hook-level validation
-      if (formData.phone) {
-        const phoneDigits = String(formData.phone).replace(/\D/g, "");
-        if (phoneDigits.length !== 10) {
-          setState({ status: "error", errorMessage: "Phone must be 10 digits" });
-          return;
-        }
-        formData.phone = phoneDigits;
-      }
-      if (!formData.firstName || !formData.email) {
-        setState({ status: "error", errorMessage: "First name and email are required" });
-        return;
-      }
-
+    async (formData: Record<string, unknown>): Promise<SubmissionResponse> => {
       setState({ status: "submitting", errorMessage: "" });
-
-      const attribution = initAttribution();
-
-      const payload = {
-        customer_id: config.customerId,
-        site_id: config.siteId,
-        source_provider: config.sourceProvider,
-        form_data: formData,
-        url: window.location.href,
-        referrer_url: document.referrer || null,
-        session_id: getSessionId(),
-        visitor_id: getVisitorId(),
-        utm_source: attribution.utm_source,
-        utm_medium: attribution.utm_medium,
-        utm_campaign: attribution.utm_campaign,
-        utm_term: attribution.utm_term,
-        utm_content: attribution.utm_content,
-        gclid: attribution.gclid,
-        gbraid: attribution.gbraid,
-        wbraid: attribution.wbraid,
-        fbclid: attribution.fbclid,
-        fbp: attribution.fbp,
-        fbc: attribution.fbc,
-      };
-
       try {
-        const response = await fetch(ENDPOINT, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-          throw new Error(`Submission failed: ${response.status}`);
-        }
-
-        // Optional: dispatch an event for tracking integrations
-        if (typeof window !== "undefined") {
-          try {
-            window.dispatchEvent(
-              new CustomEvent("mega:form_submit", {
-                detail: { form_data: formData, page_path: config.pagePath || window.location.pathname },
-              })
-            );
-          } catch {
-            // silent
-          }
-        }
-
+        const leadData = validateLeadData(formData);
+        const accepted = await postLead(buildPayload(config, leadData));
+        dispatchSubmitEvent(leadData, config.pagePath);
         setState({ status: "success", errorMessage: "" });
+        return accepted;
       } catch (error) {
-        setState({
-          status: "error",
-          errorMessage: error instanceof Error ? error.message : "Something went wrong. Please try again.",
-        });
+        const message = error instanceof Error ? error.message : "Something went wrong. Please try again.";
+        setState({ status: "error", errorMessage: message });
+        throw error instanceof Error ? error : new Error(message);
       }
     },
-    [config, state.status]
+    [config]
   );
 
   const reset = useCallback(() => {
