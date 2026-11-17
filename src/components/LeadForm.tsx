@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState, type JSX, type KeyboardEvent } from "react";
+import { useEffect, useId, useRef, useState, type JSX, type KeyboardEvent } from "react";
 import { useMegaLeadForm } from "@/hooks/useMegaLeadForm";
 import {
   EMAIL_ERROR,
@@ -109,6 +109,7 @@ declare global {
       ) => void;
       [k: string]: unknown;
     };
+    __ctm?: { main?: { runNow?: (scope: HTMLElement) => void } };
   }
 }
 
@@ -192,6 +193,35 @@ function fireTracking(formId: string, leadData: Record<string, string>): void {
   safely(() => window.fbq?.("track", "Lead", { content_name: formId, qualified }));
 }
 
+// CallTrackingMetrics swaps numbers only in markup it has already scanned, so the
+// confirmation panel's call link keeps the authored fallback until it is rescanned.
+const CTM_RESCAN_INTERVAL_MS = 500;
+const CTM_RESCAN_MAX_ATTEMPTS = 20;
+
+/** Asks CTM to rescan only `panel`, retrying (bounded) while CTM is missing or throws.
+ *  Returns a cleanup that cancels any pending retry. */
+function startCtmRescan(panel: HTMLElement): () => void {
+  let attempts = 0;
+  let timer: number | undefined;
+  const attempt = (): void => {
+    attempts += 1;
+    try {
+      const main = window.__ctm?.main;
+      if (typeof main?.runNow === "function") {
+        main.runNow(panel);
+        return;
+      }
+    } catch {
+      // A CTM failure must not undo an accepted lead; retry below.
+    }
+    if (attempts < CTM_RESCAN_MAX_ATTEMPTS) {
+      timer = window.setTimeout(attempt, CTM_RESCAN_INTERVAL_MS);
+    }
+  };
+  attempt();
+  return () => window.clearTimeout(timer);
+}
+
 /** Enter keys that keep their native meaning (landing-page-forms §6). */
 const NATIVE_ENTER_TAGS = new Set(["TEXTAREA", "SELECT", "BUTTON", "A"]);
 
@@ -230,6 +260,13 @@ export function LeadForm({
   const [errors, setErrors] = useState<FieldErrors>({});
   const [touched, setTouched] = useState<Partial<Record<FieldKey, boolean>>>({});
   const inFlightRef = useRef(false);
+  const successPanelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const panel = successPanelRef.current;
+    if (!submitted || !panel) return;
+    return startCtmRescan(panel);
+  }, [submitted]);
 
   const submitting = status === "submitting";
   const submitFailed = status === "error";
@@ -314,7 +351,7 @@ export function LeadForm({
       ownerOrAuthorized: data.ownerOrAuthorized,
     }).qualified;
     return (
-      <div className={`relative overflow-hidden rounded-2xl ${shellCls}`}>
+      <div ref={successPanelRef} className={`relative overflow-hidden rounded-2xl ${shellCls}`}>
         <div className="h-1.5 bg-[var(--color-accent)]" aria-hidden="true" />
         <div className="p-8 sm:p-10">
           <div className="flex flex-col items-center text-center">
