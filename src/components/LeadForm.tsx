@@ -11,6 +11,7 @@ import {
   PHONE_HREF,
   OWNER_AUTHORIZED_OPTIONS,
   leadIsQualified,
+  type Option,
 } from "./Brand";
 
 interface LeadFormProps {
@@ -31,6 +32,8 @@ interface FormData {
   email: string;
   phone: string;
   ownerOrAuthorized: string; // "" | "yes" | "no"
+  visibleMold: string; // "" | "yes" | "no"
+  visibleWaterDamage: string; // "" | "yes" | "no"
 }
 
 type FieldKey = keyof FormData;
@@ -43,6 +46,8 @@ const NAME_ATTR: Record<FieldKey, string> = {
   email: "email",
   phone: "phone",
   ownerOrAuthorized: "owner_or_authorized",
+  visibleMold: "visible_mold",
+  visibleWaterDamage: "visible_water_damage",
 };
 
 const initial: FormData = {
@@ -52,7 +57,17 @@ const initial: FormData = {
   email: "",
   phone: "",
   ownerOrAuthorized: "",
+  visibleMold: "",
+  visibleWaterDamage: "",
 };
+
+const YES_NO_OPTIONS: Option[] = [
+  { value: "", label: "Select one…" },
+  { value: "yes", label: "Yes" },
+  { value: "no", label: "No" },
+];
+
+const isYesNo = (value: string): boolean => value === "yes" || value === "no";
 
 type FieldErrors = Partial<Record<FieldKey, string>>;
 
@@ -94,6 +109,9 @@ function validateField(key: FieldKey, value: string): string | undefined {
     }
     case "ownerOrAuthorized":
       return value ? undefined : "Please select an option.";
+    case "visibleMold":
+    case "visibleWaterDamage":
+      return isYesNo(value) ? undefined : "Please select an option.";
   }
 }
 
@@ -121,6 +139,8 @@ const REQUIRED_ORDER: FieldKey[] = [
   "email",
   "phone",
   "ownerOrAuthorized",
+  "visibleMold",
+  "visibleWaterDamage",
 ];
 
 export function LeadForm({
@@ -259,6 +279,8 @@ export function LeadForm({
         email,
         phone,
         ownerOrAuthorized,
+        visible_mold: data.visibleMold,
+        visible_water_damage: data.visibleWaterDamage,
         qualified: qualified ? "yes" : "no",
         disqualification_reason: reason,
       });
@@ -457,6 +479,52 @@ export function LeadForm({
           />
         </div>
 
+        <div className="mt-4">
+          <SelectField
+            label="Do you see visible mold growth?"
+            k="visibleMold"
+            name={NAME_ATTR.visibleMold}
+            required
+            nativeRequired
+            options={YES_NO_OPTIONS}
+            value={data.visibleMold}
+            error={showErr("visibleMold") ? errors.visibleMold : undefined}
+            disabled={submitting}
+            id={id("visibleMold")}
+            errId={errId("visibleMold")}
+            inputCls={inputCls("visibleMold")}
+            onChange={(v) => {
+              update("visibleMold", v);
+              markTouched("visibleMold", v);
+            }}
+            refCb={(el) => (fieldRefs.current.visibleMold = el)}
+          />
+        </div>
+
+        <div className="mt-4">
+          <SelectField
+            label="Do you see visible water damage?"
+            k="visibleWaterDamage"
+            name={NAME_ATTR.visibleWaterDamage}
+            required
+            nativeRequired
+            options={YES_NO_OPTIONS}
+            value={data.visibleWaterDamage}
+            error={
+              showErr("visibleWaterDamage") ? errors.visibleWaterDamage : undefined
+            }
+            disabled={submitting}
+            id={id("visibleWaterDamage")}
+            errId={errId("visibleWaterDamage")}
+            inputCls={inputCls("visibleWaterDamage")}
+            onChange={(v) => {
+              update("visibleWaterDamage", v);
+              markTouched("visibleWaterDamage", v);
+            }}
+            refCb={(el) => (fieldRefs.current.visibleWaterDamage = el)}
+          />
+        </div>
+
         {errorMessage && status === "error" && (
           <div
             id={errId("form")}
@@ -564,6 +632,8 @@ function TextField(props: TextFieldProps): JSX.Element {
 interface SelectFieldProps extends BaseFieldProps {
   options: { value: string; label: string }[];
   required?: boolean;
+  // Sets the DOM `required` attribute; `required` alone only shows the asterisk.
+  nativeRequired?: boolean;
 }
 
 function SelectField(props: SelectFieldProps): JSX.Element {
@@ -580,6 +650,7 @@ function SelectField(props: SelectFieldProps): JSX.Element {
     refCb,
     options,
     required,
+    nativeRequired,
   } = props;
   return (
     <div>
@@ -592,6 +663,7 @@ function SelectField(props: SelectFieldProps): JSX.Element {
           ref={(el) => refCb(el)}
           id={id}
           name={name}
+          required={nativeRequired}
           disabled={disabled}
           value={value}
           onChange={(e) => onChange(e.target.value)}
