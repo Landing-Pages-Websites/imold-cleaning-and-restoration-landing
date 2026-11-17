@@ -1,7 +1,19 @@
 "use client";
 
-import { useId, useRef, useState, type JSX } from "react";
+import { useId, useRef, useState, type JSX, type KeyboardEvent } from "react";
 import { useMegaLeadForm } from "@/hooks/useMegaLeadForm";
+import {
+  EMAIL_ERROR,
+  EMAIL_MAX_LENGTH,
+  EMAIL_PATTERN,
+  PHONE_ERROR,
+  PHONE_PATTERN,
+  formatPhone,
+  isValidEmail,
+  isValidPhone,
+  normalizeEmail,
+  phoneDigits,
+} from "@/lib/fields";
 import { Icon } from "./Icons";
 import {
   CUSTOMER_ID,
@@ -11,6 +23,7 @@ import {
   PHONE_HREF,
   OWNER_AUTHORIZED_OPTIONS,
   leadIsQualified,
+  type Option,
 } from "./Brand";
 
 interface LeadFormProps {
@@ -21,9 +34,10 @@ interface LeadFormProps {
   submitLabel?: string;
 }
 
-// React state uses camelCase keys. The submitted form_data ALSO uses camelCase
-// (the useMegaLeadForm hook validates formData.firstName before it will submit),
-// so there is exactly one representation per field — no duplicate keys.
+// React state uses camelCase keys. The submitted form_data keeps the existing
+// single legacy keys (firstName, lastName, propertyAddress, ownerOrAuthorized);
+// email, phone and the two new questions match their DOM names exactly. One key
+// per field — no duplicate aliases.
 interface FormData {
   firstName: string;
   lastName: string;
@@ -31,6 +45,8 @@ interface FormData {
   email: string;
   phone: string;
   ownerOrAuthorized: string; // "" | "yes" | "no"
+  visibleMold: string; // "" | "yes" | "no"
+  visibleWaterDamage: string; // "" | "yes" | "no"
 }
 
 type FieldKey = keyof FormData;
@@ -43,6 +59,8 @@ const NAME_ATTR: Record<FieldKey, string> = {
   email: "email",
   phone: "phone",
   ownerOrAuthorized: "owner_or_authorized",
+  visibleMold: "visible_mold",
+  visibleWaterDamage: "visible_water_damage",
 };
 
 const initial: FormData = {
@@ -52,6 +70,30 @@ const initial: FormData = {
   email: "",
   phone: "",
   ownerOrAuthorized: "",
+  visibleMold: "",
+  visibleWaterDamage: "",
+};
+
+const YES_NO_OPTIONS: Option[] = [
+  { value: "", label: "Select one…" },
+  { value: "yes", label: "Yes" },
+  { value: "no", label: "No" },
+];
+
+const TEXT_MAX_LENGTH = 200;
+// Side-by-side select cells (lg+): label/control/error share subgrid rows so both
+// controls line up even when only one label wraps.
+const PAIRED_SELECT_CLS =
+  "lg:row-span-3 lg:grid lg:grid-rows-subgrid lg:[&>label]:self-end";
+
+const isDeclaredOption = (options: Option[], value: string): boolean =>
+  value !== "" && options.some((opt) => opt.value === value);
+
+const textError = (value: string, emptyMessage: string): string | undefined => {
+  const v = value.trim();
+  if (!v) return emptyMessage;
+  if (v.length > TEXT_MAX_LENGTH) return `Please keep this under ${TEXT_MAX_LENGTH} characters.`;
+  return undefined;
 };
 
 type FieldErrors = Partial<Record<FieldKey, string>>;
@@ -63,37 +105,34 @@ declare global {
     MegaTag?: {
       trackEvent?: (
         eventName: string,
-        eventData?: Record<string, unknown>
+        eventData?: { elementId: string; formData: Record<string, string> }
       ) => void;
       [k: string]: unknown;
     };
   }
 }
 
-const EMAIL_RE = /^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
-
+// The single validator (landing-page-forms §4c): canonical email/phone rules
+// from lib/fields, declared options for selects, trimmed 1–200 chars for text.
 function validateField(key: FieldKey, value: string): string | undefined {
   switch (key) {
     case "firstName":
-      return value.trim() ? undefined : "Please enter your first name.";
+      return textError(value, "Please enter your first name.");
     case "lastName":
-      return value.trim() ? undefined : "Please enter your last name.";
+      return textError(value, "Please enter your last name.");
     case "propertyAddress":
-      return value.trim() ? undefined : "Please enter the property address.";
-    case "email": {
-      const v = value.trim();
-      if (!v) return "Please enter your email address.";
-      if (!EMAIL_RE.test(v)) return "Please enter a valid email address.";
-      return undefined;
-    }
-    case "phone": {
-      const digits = value.replace(/\D/g, "");
-      if (!digits) return "Please enter your phone number.";
-      if (digits.length !== 10) return "Phone must be a 10-digit number.";
-      return undefined;
-    }
+      return textError(value, "Please enter the property address.");
+    case "email":
+      if (!value.trim()) return "Please enter your email address.";
+      return isValidEmail(value) ? undefined : EMAIL_ERROR;
+    case "phone":
+      if (!value.trim()) return "Please enter your phone number.";
+      return isValidPhone(value) ? undefined : PHONE_ERROR;
     case "ownerOrAuthorized":
-      return value ? undefined : "Please select an option.";
+      return isDeclaredOption(OWNER_AUTHORIZED_OPTIONS, value) ? undefined : "Please select an option.";
+    case "visibleMold":
+    case "visibleWaterDamage":
+      return isDeclaredOption(YES_NO_OPTIONS, value) ? undefined : "Please select an option.";
   }
 }
 
@@ -106,13 +145,55 @@ function validateAll(data: FormData): FieldErrors {
   return errors;
 }
 
-function formatPhone(raw: string): string {
-  const d = raw.replace(/\D/g, "").slice(0, 10);
-  if (d.length === 0) return "";
-  if (d.length < 4) return `(${d}`;
-  if (d.length < 7) return `(${d.slice(0, 3)}) ${d.slice(3)}`;
-  return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+/** The lead form_data: one normalized key per control plus qualification metadata. */
+function buildLeadData(data: FormData): Record<string, string> {
+  const { qualified, reason } = leadIsQualified({ ownerOrAuthorized: data.ownerOrAuthorized });
+  return {
+    firstName: data.firstName.trim(),
+    lastName: data.lastName.trim(),
+    propertyAddress: data.propertyAddress.trim(),
+    email: normalizeEmail(data.email),
+    phone: phoneDigits(data.phone),
+    ownerOrAuthorized: data.ownerOrAuthorized,
+    visible_mold: data.visibleMold,
+    visible_water_damage: data.visibleWaterDamage,
+    qualified: qualified ? "yes" : "no",
+    disqualification_reason: reason,
+  };
 }
+
+/** Each tracking destination is isolated: one throwing tracker never blocks the others. */
+function safely(send: () => void): void {
+  try {
+    send();
+  } catch {
+    // Tracking failures must not undo an accepted lead.
+  }
+}
+
+/** Fires the existing success-path events. Runs only after the server accepted the lead. */
+function fireTracking(formId: string, leadData: Record<string, string>): void {
+  const qualified = leadData.qualified === "yes";
+  const envelope = { elementId: `form-${formId}`, formData: leadData };
+  const dlBase = { form_id: formId, qualified: leadData.qualified, disqualification_reason: leadData.disqualification_reason };
+
+  // 1. MegaTag optimizer event — every accepted lead, BEFORE dataLayer.
+  safely(() => window.MegaTag?.trackEvent?.("form_submit", envelope));
+  if (qualified) safely(() => window.MegaTag?.trackEvent?.("qualified_lead", envelope));
+
+  // 2. GTM dataLayer — form_submission (workspace floor) + form_submit (task spec).
+  window.dataLayer = window.dataLayer || [];
+  const dataLayer = window.dataLayer;
+  safely(() => dataLayer.push({ event: "form_submission", ...dlBase }));
+  safely(() => dataLayer.push({ event: "form_submit", ...dlBase }));
+  if (qualified) safely(() => dataLayer.push({ event: "qualified_lead", form_id: formId }));
+
+  // 3. Meta Pixel Lead event.
+  safely(() => window.fbq?.("track", "Lead", { content_name: formId, qualified }));
+}
+
+/** Enter keys that keep their native meaning (landing-page-forms §6). */
+const NATIVE_ENTER_TAGS = new Set(["TEXTAREA", "SELECT", "BUTTON", "A"]);
 
 const REQUIRED_ORDER: FieldKey[] = [
   "firstName",
@@ -121,6 +202,8 @@ const REQUIRED_ORDER: FieldKey[] = [
   "email",
   "phone",
   "ownerOrAuthorized",
+  "visibleMold",
+  "visibleWaterDamage",
 ];
 
 export function LeadForm({
@@ -130,7 +213,7 @@ export function LeadForm({
   subhead,
   submitLabel = "Get My Free Inspection",
 }: LeadFormProps): JSX.Element {
-  const { status, errorMessage, submitLead } = useMegaLeadForm({
+  const { status, submitLead } = useMegaLeadForm({
     customerId: CUSTOMER_ID,
     siteId: SITE_ID,
     sourceProvider: SOURCE_PROVIDER,
@@ -149,7 +232,7 @@ export function LeadForm({
   const inFlightRef = useRef(false);
 
   const submitting = status === "submitting";
-  const success = status === "success" || submitted;
+  const submitFailed = status === "error";
 
   const update = <K extends FieldKey>(k: K, v: FormData[K]) => {
     setData((d) => ({ ...d, [k]: v }));
@@ -173,60 +256,28 @@ export function LeadForm({
     });
   };
 
-  const fireTracking = (payload: {
-    qualified: boolean;
-    reason: string;
-    ownerOrAuthorized: string;
-  }) => {
-    if (typeof window === "undefined") return;
-    const shared = {
-      element: `form-${formId}`,
-      form_id: formId,
-      owner_or_authorized: payload.ownerOrAuthorized,
-      qualified: payload.qualified ? "yes" : "no",
-      disqualification_reason: payload.reason,
-    };
-
-    // 1. MegaTag optimizer event — fires for EVERY submit, BEFORE dataLayer.
-    if (window.MegaTag?.trackEvent) {
-      try {
-        window.MegaTag.trackEvent("form_submit", shared);
-        if (payload.qualified) {
-          window.MegaTag.trackEvent("qualified_lead", shared);
-        }
-      } catch {
-        /* silent */
-      }
+  // §7: synchronous latch, response-gated success. The latch stays set after an
+  // accepted lead (one lead per page view) and is released on any failure.
+  const performSubmit = async (): Promise<void> => {
+    if (inFlightRef.current || submitted) return;
+    inFlightRef.current = true;
+    const leadData = buildLeadData(data);
+    const accepted = await submitLead(leadData).then(
+      (result) => result?.ok === true,
+      () => false
+    );
+    if (!accepted) {
+      // Fail closed: keep the form and its values; the inline alert offers retry or a call.
+      inFlightRef.current = false;
+      return;
     }
-
-    // 2. GTM dataLayer — form_submission (workspace floor) + form_submit (task spec).
-    window.dataLayer = window.dataLayer || [];
-    const dlBase = {
-      form_id: formId,
-      qualified: payload.qualified ? "yes" : "no",
-      disqualification_reason: payload.reason,
-    };
-    window.dataLayer.push({ event: "form_submission", ...dlBase });
-    window.dataLayer.push({ event: "form_submit", ...dlBase });
-    if (payload.qualified) {
-      window.dataLayer.push({ event: "qualified_lead", form_id: formId });
-    }
-
-    // 3. Meta Pixel Lead event.
-    if (typeof window.fbq === "function") {
-      try {
-        window.fbq("track", "Lead", {
-          content_name: formId,
-          qualified: payload.qualified,
-        });
-      } catch {
-        /* silent */
-      }
-    }
+    setSubmitted(true);
+    fireTracking(formId, leadData);
   };
 
-  const handleClick = async () => {
-    if (submitting || success || inFlightRef.current) return;
+  // §6: validate first, then send directly. Never dispatches a native submit.
+  const handleClick = (): void => {
+    if (inFlightRef.current) return;
     const allErrors = validateAll(data);
     if (Object.keys(allErrors).length > 0) {
       setErrors(allErrors);
@@ -239,35 +290,16 @@ export function LeadForm({
       if (firstBad) fieldRefs.current[firstBad]?.focus();
       return;
     }
-    inFlightRef.current = true;
+    void performSubmit();
+  };
 
-    const firstName = data.firstName.trim();
-    const lastName = data.lastName.trim();
-    const propertyAddress = data.propertyAddress.trim();
-    const email = data.email.trim();
-    const phone = data.phone.replace(/\D/g, "");
-    const ownerOrAuthorized = data.ownerOrAuthorized;
-
-    const { qualified, reason } = leadIsQualified({ ownerOrAuthorized });
-
-    try {
-      // ALL leads submit (qualified or not). Hook requires firstName + email.
-      await submitLead({
-        firstName,
-        lastName,
-        propertyAddress,
-        email,
-        phone,
-        ownerOrAuthorized,
-        qualified: qualified ? "yes" : "no",
-        disqualification_reason: reason,
-      });
-
-      fireTracking({ qualified, reason, ownerOrAuthorized });
-      setSubmitted(true);
-    } finally {
-      inFlightRef.current = false;
-    }
+  // Stops implicit submission on keydown, before a native submit (and the
+  // optimizer's capture listener) can see it.
+  const handleKeyDown = (e: KeyboardEvent<HTMLFormElement>): void => {
+    if (e.key !== "Enter" || e.nativeEvent.isComposing) return;
+    if (NATIVE_ENTER_TAGS.has((e.target as HTMLElement).tagName)) return;
+    e.preventDefault();
+    handleClick();
   };
 
   const showErr = (k: FieldKey) => Boolean(touched[k] && errors[k]);
@@ -277,7 +309,7 @@ export function LeadForm({
   const shellCls =
     "bg-white shadow-[0_24px_70px_-24px_rgba(0,0,0,0.6)] ring-1 ring-black/5";
 
-  if (success) {
+  if (submitted) {
     const wasQualified = leadIsQualified({
       ownerOrAuthorized: data.ownerOrAuthorized,
     }).qualified;
@@ -313,12 +345,15 @@ export function LeadForm({
 
   return (
     <form
-      onSubmit={(e) => e.preventDefault()}
+      onKeyDown={handleKeyDown}
+      onSubmit={(e) => {
+        // Backstop only: a native submit has already reached capture listeners.
+        e.preventDefault();
+        handleClick();
+      }}
       noValidate
       className={`relative overflow-hidden rounded-2xl ${shellCls}`}
-      aria-describedby={
-        status === "error" && errorMessage ? errId("form") : undefined
-      }
+      aria-describedby={submitFailed ? errId("form") : undefined}
     >
       <div className="h-1.5 bg-[var(--color-accent)]" aria-hidden="true" />
       <div className="p-6 sm:p-7">
@@ -399,7 +434,12 @@ export function LeadForm({
             name={NAME_ATTR.email}
             type="email"
             autoComplete="email"
-            pattern="[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}"
+            inputMode="email"
+            pattern={EMAIL_PATTERN}
+            maxLength={EMAIL_MAX_LENGTH}
+            spellCheck={false}
+            autoCapitalize="none"
+            title={EMAIL_ERROR}
             value={data.email}
             error={showErr("email") ? errors.email : undefined}
             disabled={submitting}
@@ -419,8 +459,9 @@ export function LeadForm({
             name={NAME_ATTR.phone}
             type="tel"
             inputMode="numeric"
-            autoComplete="tel"
-            pattern="\(\d{3}\) \d{3}-\d{4}"
+            autoComplete="tel-national"
+            pattern={PHONE_PATTERN}
+            title={PHONE_ERROR}
             placeholder="(239) 326-0357"
             value={data.phone}
             error={showErr("phone") ? errors.phone : undefined}
@@ -457,21 +498,68 @@ export function LeadForm({
           />
         </div>
 
-        {errorMessage && status === "error" && (
+        <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-y-0">
+          <SelectField
+            label="Do you see visible mold growth?"
+            className={PAIRED_SELECT_CLS}
+            k="visibleMold"
+            name={NAME_ATTR.visibleMold}
+            required
+            options={YES_NO_OPTIONS}
+            value={data.visibleMold}
+            error={showErr("visibleMold") ? errors.visibleMold : undefined}
+            disabled={submitting}
+            id={id("visibleMold")}
+            errId={errId("visibleMold")}
+            inputCls={inputCls("visibleMold")}
+            onChange={(v) => {
+              update("visibleMold", v);
+              markTouched("visibleMold", v);
+            }}
+            refCb={(el) => (fieldRefs.current.visibleMold = el)}
+          />
+          <SelectField
+            label="Do you see visible water damage?"
+            className={PAIRED_SELECT_CLS}
+            k="visibleWaterDamage"
+            name={NAME_ATTR.visibleWaterDamage}
+            required
+            options={YES_NO_OPTIONS}
+            value={data.visibleWaterDamage}
+            error={
+              showErr("visibleWaterDamage") ? errors.visibleWaterDamage : undefined
+            }
+            disabled={submitting}
+            id={id("visibleWaterDamage")}
+            errId={errId("visibleWaterDamage")}
+            inputCls={inputCls("visibleWaterDamage")}
+            onChange={(v) => {
+              update("visibleWaterDamage", v);
+              markTouched("visibleWaterDamage", v);
+            }}
+            refCb={(el) => (fieldRefs.current.visibleWaterDamage = el)}
+          />
+        </div>
+
+        {submitFailed && (
           <div
             id={errId("form")}
             role="alert"
             aria-live="assertive"
             className="mt-4 text-sm font-medium text-[var(--color-error)]"
           >
-            {errorMessage}
+            Your request didn&apos;t go through. Please try again, or call{" "}
+            <a className="font-semibold underline whitespace-nowrap" href={PHONE_HREF}>
+              {PHONE_DISPLAY}
+            </a>
+            .
           </div>
         )}
 
         <button
           type="button"
           onClick={handleClick}
-          disabled={submitting || success}
+          disabled={submitting || submitted}
           className="btn-primary w-full mt-5 py-3.5 text-base"
         >
           {submitting ? "Sending…" : submitLabel}
@@ -504,9 +592,13 @@ interface BaseFieldProps {
 interface TextFieldProps extends BaseFieldProps {
   type: "text" | "email" | "tel";
   autoComplete?: string;
-  inputMode?: "numeric" | "text";
+  inputMode?: "numeric" | "text" | "email";
   pattern?: string;
   placeholder?: string;
+  maxLength?: number;
+  spellCheck?: boolean;
+  autoCapitalize?: string;
+  title?: string;
   onBlur: (v: string) => void;
 }
 
@@ -528,6 +620,10 @@ function TextField(props: TextFieldProps): JSX.Element {
     inputMode,
     pattern,
     placeholder,
+    maxLength,
+    spellCheck,
+    autoCapitalize,
+    title,
   } = props;
   return (
     <div>
@@ -543,6 +639,10 @@ function TextField(props: TextFieldProps): JSX.Element {
         inputMode={inputMode}
         pattern={pattern}
         placeholder={placeholder}
+        maxLength={maxLength}
+        spellCheck={spellCheck}
+        autoCapitalize={autoCapitalize}
+        title={title}
         required
         className={inputCls}
         value={value}
@@ -564,6 +664,7 @@ function TextField(props: TextFieldProps): JSX.Element {
 interface SelectFieldProps extends BaseFieldProps {
   options: { value: string; label: string }[];
   required?: boolean;
+  className?: string;
 }
 
 function SelectField(props: SelectFieldProps): JSX.Element {
@@ -580,9 +681,10 @@ function SelectField(props: SelectFieldProps): JSX.Element {
     refCb,
     options,
     required,
+    className,
   } = props;
   return (
-    <div>
+    <div className={className}>
       <label htmlFor={id} className="lp-label">
         {label}{" "}
         {required && <span className="text-[var(--color-error)]">*</span>}
@@ -592,6 +694,7 @@ function SelectField(props: SelectFieldProps): JSX.Element {
           ref={(el) => refCb(el)}
           id={id}
           name={name}
+          required={required}
           disabled={disabled}
           value={value}
           onChange={(e) => onChange(e.target.value)}

@@ -43,16 +43,16 @@ export function FinalCTA(): JSX.Element {
               <Stars size={16} />
               {RATING} · {REVIEW_COUNT} five-star reviews
             </div>
-            <h2 className="mt-5 text-[clamp(2rem,4vw,3rem)] font-extrabold leading-[1.06] text-white">
+            <h2 className="mt-5 lg:mt-6 text-[clamp(2rem,4vw,3rem)] font-extrabold leading-[1.06] text-white">
               Talk to a local restoration expert now
             </h2>
-            <p className="mt-4 text-lg text-white/80 leading-relaxed max-w-xl">
+            <p className="mt-4 lg:mt-8 text-lg text-white/80 leading-relaxed max-w-xl">
               Water and mold don&apos;t wait, and neither should you. Request your
               free inspection, or call our team any time — day or night — and
               we&apos;ll respond right away.
             </p>
 
-            <ul className="mt-6 space-y-2.5">
+            <ul className="mt-6 lg:mt-12 space-y-2.5 lg:space-y-6">
               {REASSURANCE.map((r) => (
                 <li key={r} className="flex items-center gap-2.5 text-white/90">
                   <Icon
@@ -68,7 +68,7 @@ export function FinalCTA(): JSX.Element {
 
             <a
               href={PHONE_HREF}
-              className="btn-secondary mt-8"
+              className="btn-secondary mt-8 lg:mt-16"
               aria-label={`Call ${BUSINESS_NAME} at ${PHONE_DISPLAY}`}
             >
               <Icon name="phone" size={18} className="text-[var(--color-secondary)]" />
