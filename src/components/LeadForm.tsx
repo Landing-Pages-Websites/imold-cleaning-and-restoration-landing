@@ -81,6 +81,10 @@ const YES_NO_OPTIONS: Option[] = [
 ];
 
 const TEXT_MAX_LENGTH = 200;
+// Side-by-side select cells (lg+): label/control/error share subgrid rows so both
+// controls line up even when only one label wraps.
+const PAIRED_SELECT_CLS =
+  "lg:row-span-3 lg:grid lg:grid-rows-subgrid lg:[&>label]:self-end";
 
 const isDeclaredOption = (options: Option[], value: string): boolean =>
   value !== "" && options.some((opt) => opt.value === value);
@@ -494,9 +498,10 @@ export function LeadForm({
           />
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-y-0">
           <SelectField
             label="Do you see visible mold growth?"
+            className={PAIRED_SELECT_CLS}
             k="visibleMold"
             name={NAME_ATTR.visibleMold}
             required
@@ -513,11 +518,9 @@ export function LeadForm({
             }}
             refCb={(el) => (fieldRefs.current.visibleMold = el)}
           />
-        </div>
-
-        <div className="mt-4">
           <SelectField
             label="Do you see visible water damage?"
+            className={PAIRED_SELECT_CLS}
             k="visibleWaterDamage"
             name={NAME_ATTR.visibleWaterDamage}
             required
@@ -661,6 +664,7 @@ function TextField(props: TextFieldProps): JSX.Element {
 interface SelectFieldProps extends BaseFieldProps {
   options: { value: string; label: string }[];
   required?: boolean;
+  className?: string;
 }
 
 function SelectField(props: SelectFieldProps): JSX.Element {
@@ -677,9 +681,10 @@ function SelectField(props: SelectFieldProps): JSX.Element {
     refCb,
     options,
     required,
+    className,
   } = props;
   return (
-    <div>
+    <div className={className}>
       <label htmlFor={id} className="lp-label">
         {label}{" "}
         {required && <span className="text-[var(--color-error)]">*</span>}
