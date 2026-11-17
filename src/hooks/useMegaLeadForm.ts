@@ -9,6 +9,7 @@ import {
   normalizeEmail,
   phoneDigits,
 } from "@/lib/fields";
+import { resolveLeadSource } from "@/lib/leadSource";
 
 const ENDPOINT = "https://analytics.gomega.ai/submission/submit";
 
@@ -165,7 +166,7 @@ const buildPayload = (config: LeadFormConfig, formData: Record<string, unknown>)
     customer_id: config.customerId,
     site_id: config.siteId,
     source_provider: config.sourceProvider,
-    form_data: formData,
+    form_data: { ...formData, ...resolveLeadSource(attribution, document.referrer) },
     url: window.location.href,
     referrer_url: document.referrer || null,
     session_id: getSessionId(),
